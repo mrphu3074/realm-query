@@ -38,6 +38,7 @@
     "@types/realm": "^1.0.3",
     "chai": "^3.5.0",
     "codecov": "^2.1.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "realm": "^1.2.0",
     "typescript": "^2.2.2"
