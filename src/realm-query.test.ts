@@ -10,7 +10,7 @@ describe("RealmQuery", function () {
     query = RealmQuery.create();
   });
 
-  it('should able to add new criteria', function() {
+  it('should able to add new criteria', function () {
     expect(query['criteria'].length).to.equal(0);
     query.addCriteria('id == 1');
     expect(query['criteria'].length).to.equal(1);
