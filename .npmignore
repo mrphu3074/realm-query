@@ -1,5 +1,5 @@
 ./src
 .vscode
-.tsconfig
+tsconfig.json
 ./realm-object-server
 ./io.izlab.realmquery*

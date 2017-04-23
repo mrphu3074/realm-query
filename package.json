@@ -10,7 +10,8 @@
     "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "mocha dist/*.test.js",
-    "coverage": "npm run build && istanbul cover _mocha dist/*.test.js"
+    "coverage": "npm run build && istanbul cover _mocha dist/*.test.js --report lcovonly -- -R spec && npm run codecov",
+    "codecov": "codecov -t 69b67246-f89a-4d2a-9fc2-59b6d3e7e652"
   },
   "repository": {
     "type": "git",
@@ -36,9 +37,10 @@
     "@types/mocha": "^2.2.41",
     "@types/realm": "^1.0.3",
     "chai": "^3.5.0",
+    "codecov": "^2.1.0",
     "mocha": "^3.2.0",
-    "typescript": "^2.2.2",
-    "realm": "^1.2.0"
+    "realm": "^1.2.0",
+    "typescript": "^2.2.2"
   },
   "peerDependencies": {
     "realm": "^1.2.0"
