@@ -1,0 +1,49 @@
+{
+  "name": "realm-query",
+  "version": "0.0.1",
+  "description": "A query builder for realm.js",
+  "main": "./dist/realm-query.js",
+  "scripts": {
+    "clean": "rm -rf ./dist ./realm-object-server ./io.izlab.realmquery*",
+    "compile": "tsc",
+    "build": "npm run clean && npm run compile",
+    "prepublish": "npm run build",
+    "pretest": "npm run build",
+    "test": "mocha dist/*.test.js",
+    "coverage": "npm run build && istanbul cover _mocha dist/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrphu3074/realm-query.git"
+  },
+  "keywords": [
+    "realm",
+    "realmjs",
+    "realm-query",
+    "query-builder",
+    "react-native",
+    "javascript"
+  ],
+  "author": "mrphu3074@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mrphu3074/realm-query/issues"
+  },
+  "homepage": "https://github.com/mrphu3074/realm-query#readme",
+  "devDependencies": {
+    "@types/chai": "^3.5.1",
+    "@types/lodash": "^4.14.63",
+    "@types/mocha": "^2.2.41",
+    "@types/realm": "^1.0.3",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "typescript": "^2.2.2",
+    "realm": "^1.2.0"
+  },
+  "peerDependencies": {
+    "realm": "^1.2.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
