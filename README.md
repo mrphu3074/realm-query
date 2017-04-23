@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/mrphu3074/realm-query/tree/master.svg?style=svg)](https://circleci.com/gh/mrphu3074/realm-query/tree/master)
+[![codecov](https://codecov.io/gh/mrphu3074/realm-query/branch/master/graph/badge.svg)](https://codecov.io/gh/mrphu3074/realm-query)
 
 ---- 
 
