@@ -183,8 +183,8 @@ class RealmQuery {
   static where(objects: Results<any>): RealmQuery {
     return new RealmQuery(objects);
   }
-  static create(): RealmQuery {
-    return new RealmQuery();
+  static create(objects?: Results<any>): RealmQuery {
+    return new RealmQuery(objects);
   }
 }
 
