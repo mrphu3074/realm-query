@@ -1,6 +1,6 @@
 {
   "name": "realm-query",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A query builder for realm.js",
   "main": "./dist/realm-query.js",
   "scripts": {
