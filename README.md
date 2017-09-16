@@ -92,8 +92,6 @@ let results = RealmQuery
   _Equal-to comparison_
 
 - #### findAll(): ReamResults
-  _Returns the average of a given field_
-
   _Finds all objects that fulfill the query conditions_
 
 - #### findFirst(): Object
