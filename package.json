@@ -1,16 +1,18 @@
 {
   "name": "realm-query",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "A query builder for realm.js",
   "main": "./dist/realm-query.js",
+  "typings": "index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist ./realm-object-server ./io.izlab.realmquery*",
-    "compile": "tsc",
+    "compile": "tsc --project .",
     "build": "npm run clean && npm run compile",
     "prepublish": "npm run build",
     "pretest": "npm run build",
     "test": "mocha dist/*.test.js",
-    "coverage": "npm run build && istanbul cover _mocha dist/*.test.js --report lcovonly -- -R spec",
+    "coverage":
+      "npm run build && istanbul cover _mocha dist/*.test.js --report lcovonly -- -R spec",
     "report": "codeclimate-test-reporter < ./coverage/lcov.info"
   },
   "repository": {

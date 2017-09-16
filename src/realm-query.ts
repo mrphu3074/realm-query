@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import { Results } from 'realm';
 
-type ILogicOperator = 'AND' | 'OR';
-type EqualValueType = string | number | boolean | Date;
-type CompareValueType = number | Date;
+export type ILogicOperator = 'AND' | 'OR';
+export type EqualValueType = string | number | boolean | Date;
+export type CompareValueType = number | Date;
 
 class RealmQuery {
   private objects: Results<any>;
@@ -15,7 +15,7 @@ class RealmQuery {
   constructor(objects?: Results<any>) {
     this.objects = objects;
   }
-  addCriteria(critera) {
+  addCriteria(critera): RealmQuery {
     if (this.inGroup) {
       let lastIndex = this.criteria.length - 1;
       let currentGroup: any[] = this.criteria[lastIndex];
@@ -29,23 +29,7 @@ class RealmQuery {
     }
     return this;
   }
-  toString() {
-    let criteraStr = [];
-    for (let i in this.criteria) {
-      if (_.isString(this.criteria[i])) {
-        if (this.criteria[i] !== 'NOT') {
-          criteraStr.push(this.criteria[i])
-        }
-      } else {
-        criteraStr.push('(' + this.criteria[i].join(' ') + ')');
-      }
-    }
-    if (this.criteria.indexOf('NOT') > -1) {
-      criteraStr = [`NOT(${criteraStr.join(' AND ')})`]
-    }
-    return criteraStr.join(' AND ');
-  }
-  getFilteredObjects() {
+  private getFilteredObjects() {
     const query = this.toString();
     let results = this.objects;
     if (query) {
@@ -53,66 +37,193 @@ class RealmQuery {
     }
     return results;
   }
-  average(fieldName: string): number {
+  public toString(): string {
+    let criteraStr = [];
+    for (let i in this.criteria) {
+      if (_.isString(this.criteria[i])) {
+        if (this.criteria[i] !== 'NOT') {
+          criteraStr.push(this.criteria[i]);
+        }
+      } else {
+        criteraStr.push('(' + this.criteria[i].join(' ') + ')');
+      }
+    }
+    if (this.criteria.indexOf('NOT') > -1) {
+      criteraStr = [`NOT(${criteraStr.join(' AND ')})`];
+    }
+    return criteraStr.join(' AND ');
+  }
+  /**
+   * Returns the average of a given field
+   * @param fieldName {string}
+   * @return {number}
+   */
+  public average(fieldName: string): number {
     let results = this.getFilteredObjects();
     return _.sumBy(_.toArray(results), fieldName) / results.length;
   }
-  beginGroup(): RealmQuery {
+  /**
+   * Begin grouping of conditions ("left parenthesis")
+   * 
+   * @return {RealmQuery}
+   */
+  public beginGroup(): RealmQuery {
     this.inGroup = true;
     return this;
   }
-  beginsWith(fieldName: string, value: string, casing?: boolean): RealmQuery {
+  /**
+   * Condition that the value of field begins with the specified string
+   * 
+   * @param fieldName {string}
+   * @param value {string}
+   * @param casing {boolean, optional} BEGINSWITH[c] or BEGINSWITH
+   */
+  public beginsWith(
+    fieldName: string,
+    value: string,
+    casing?: boolean
+  ): RealmQuery {
     const op = casing ? 'BEGINSWITH[c]' : 'BEGINSWITH';
     if (_.isString(value)) value = `"${value}"`;
     return this.addCriteria(`${fieldName} ${op} ${value}`);
   }
-  between(fieldName: string, from: CompareValueType, to: CompareValueType): RealmQuery {
-    return this.addCriteria(`${fieldName} >= ${from} AND ${fieldName} <= ${to}`);
+  /**
+   * Between condition
+   * 
+   * @param fieldName {string}
+   * @param from {CompareValueType}
+   * @param to {CompareValueType}
+   * @return {RealmQuery}
+   */
+  public between(
+    fieldName: string,
+    from: CompareValueType,
+    to: CompareValueType
+  ): RealmQuery {
+    return this.addCriteria(
+      `${fieldName} >= ${from} AND ${fieldName} <= ${to}`
+    );
   }
-  contains(fieldName: string, value: string, casing?: boolean): RealmQuery {
+  /**
+   * Condition that value of field contains the specified substring
+   * 
+   * @param fieldName {string}
+   * @param value {string}
+   * @param casing {boolean, optional} CONTAINS[c] or CONTAINS
+   */
+  public contains(
+    fieldName: string,
+    value: string,
+    casing?: boolean
+  ): RealmQuery {
     const op = casing ? 'CONTAINS[c]' : 'CONTAINS';
     if (_.isString(value)) value = `"${value}"`;
     return this.addCriteria(`${fieldName} ${op} ${value}`);
   }
-  count(): number {
+  /**
+   * Counts the number of objects that fulfill the query conditions
+   * 
+   * @return {number}
+   */
+  public count(): number {
     let results = this.getFilteredObjects();
     return results.length;
   }
-  distinct(fieldName: string): Array<any> {
+  /**
+   * Returns a distinct set of objects of a specific class.
+   * 
+   * @param fieldName {string}
+   * @return {any[]}
+   */
+  public distinct(fieldName: string): Array<any> {
     let results = this.getFilteredObjects();
     return _.uniqBy(_.toArray(results), fieldName);
   }
-  endGroup(): RealmQuery {
+  /**
+   * End grouping of conditions ("right parenthesis") which was opened by a call to beginGroup()
+   * @return {RealmQuery}
+   */
+  public endGroup(): RealmQuery {
     this.inGroup = false;
     return this;
   }
-  endsWith(fieldName: string, value: string, casing?: boolean): RealmQuery {
+  /**
+   * Condition that the value of field ends with the specified string
+   * 
+   * @param fieldName {string}
+   * @param value {string}
+   * @param casing {boolean, optional} ENDSWITH[c] or ENDSWITH
+   * @return {RealmQuery}
+   */
+  public endsWith(
+    fieldName: string,
+    value: string,
+    casing?: boolean
+  ): RealmQuery {
     const op = casing ? 'ENDSWITH[c]' : 'ENDSWITH';
     if (_.isString(value)) value = `"${value}"`;
     return this.addCriteria(`${fieldName} ${op} ${value}`);
   }
-  equalTo(fieldName: string, value: EqualValueType): RealmQuery {
+  /**
+   * Equal-to comparison
+   * 
+   * @param fieldName {string}
+   * @param value {EqualValueType}
+   * @return {RealmQuery}
+   */
+  public equalTo(fieldName: string, value: EqualValueType): RealmQuery {
     if (_.isString(value)) value = `"${value}"`;
     return this.addCriteria(`${fieldName} == ${value}`);
   }
-  findAll<M>(): Results<M> {
+  /**
+   * Finds all objects that fulfill the query conditions
+   * @return {Results}
+   */
+  public findAll<M>(): Results<M> {
     let results = this.getFilteredObjects();
     if (this.sortField) {
       results = results.sorted(this.sortField, this.sortReverse);
     }
     return results;
   }
-  findFirst<M>(): M {
+  /**
+   * Finds the first object that fulfills the query conditions
+   */
+  public findFirst<M>(): M {
     let results = this.getFilteredObjects();
     return results.length ? results[0] : undefined;
   }
-  greaterThan(fieldName: string, value: CompareValueType): RealmQuery {
+  /**
+   * Greater-than comparison
+   * 
+   * @param fieldName {string}
+   * @param value {CompareValueType}
+   * @return {RealmQuery}
+   */
+  public greaterThan(fieldName: string, value: CompareValueType): RealmQuery {
     return this.addCriteria(`${fieldName} > ${value}`);
   }
-  greaterThanOrEqualTo(fieldName: string, value: CompareValueType): RealmQuery {
+  /**
+   * greater-than-or-equal-to comparison
+   * 
+   * @param fieldName {string}
+   * @param value {CompareValueType}
+   * @return {RealmQuery}
+   */
+  public greaterThanOrEqualTo(
+    fieldName: string,
+    value: CompareValueType
+  ): RealmQuery {
     return this.addCriteria(`${fieldName} >= ${value}`);
   }
-  in(fieldName: string, values: EqualValueType[]): RealmQuery {
+  /**
+   * In comparison
+   * 
+   * @param fieldName {string}
+   * @param values {EqualValueType[]}
+   * @return {RealmQuery}
+   */
+  public in(fieldName: string, values: EqualValueType[]): RealmQuery {
     const criteria = [];
     for (let i in values) {
       let value = values[i];
@@ -135,54 +246,126 @@ class RealmQuery {
   isNull(fieldName: string): RealmQuery {
     throw new Error('Not yet supported "isNull"');
   }
-  lessThan(fieldName: string, value: CompareValueType): RealmQuery {
+  /**
+   * Less-than comparison
+   * 
+   * @param fieldName {string}
+   * @param value {CompareValueType}
+   * @return {RealmQuery}
+   */
+  public lessThan(fieldName: string, value: CompareValueType): RealmQuery {
     return this.addCriteria(`${fieldName} < ${value}`);
   }
-  lessThanOrEqualTo(fieldName: string, value: CompareValueType): RealmQuery {
+  /**
+   * Less-than-or-equal-to comparison
+   * 
+   * @param fieldName {string}
+   * @param value {CompareValueType}
+   * @return {RealmQuery}
+   */
+  public lessThanOrEqualTo(
+    fieldName: string,
+    value: CompareValueType
+  ): RealmQuery {
     return this.addCriteria(`${fieldName} <= ${value}`);
   }
-  like(fieldName: string, value: string): RealmQuery {
+  /**
+   * 
+   * @param fieldName 
+   * @param value 
+   */
+  public like(fieldName: string, value: string): RealmQuery {
     throw new Error('Not yet supported "like"');
   }
-  max(fieldName: string): any {
+  /**
+   * Finds the maximum value of a field
+   * 
+   * @param fieldName {string}
+   * @return {any}
+   */
+  public max(fieldName: string): any {
     let results = this.getFilteredObjects();
     return _.maxBy(_.toArray(results), fieldName);
   }
-  min(fieldName: string): any {
+  /**
+   * Finds the miniimum value of a field
+   * 
+   * @param fieldName {string}
+   * @return {any}
+   */
+  public min(fieldName: string): any {
     let results = this.getFilteredObjects();
     return _.minBy(_.toArray(results), fieldName);
   }
-  not(): RealmQuery {
+  public not(): RealmQuery {
     return this.addCriteria('NOT');
   }
-  notEqualTo(fieldName: string, value: EqualValueType): RealmQuery {
+  /**
+   * Not-equal-to comparison
+   * 
+   * @param fieldName {string}
+   * @param value {EqualValueType}
+   * @return {RealmQuery}
+   */
+  public notEqualTo(fieldName: string, value: EqualValueType): RealmQuery {
     if (_.isString(value)) value = `"${value}"`;
     return this.addCriteria(`${fieldName} <> ${value}`);
   }
-  and(): RealmQuery {
+  /**
+   * AND logic operator. Use in group
+   * 
+   * @return {RealmQuery}
+   */
+  public and(): RealmQuery {
     return this.addCriteria('AND');
   }
-  or(): RealmQuery {
+  /**
+   * OR logic operator. Use in group
+   * 
+   * @return {RealmQuery}
+   */
+  public or(): RealmQuery {
     return this.addCriteria('OR');
   }
-  sum(fieldName: string): number {
+  /**
+   * Calculates the sum of a given field
+   * 
+   * @param fieldName {string}
+   * @return {number}
+   */
+  public sum(fieldName: string): number {
     let results = this.getFilteredObjects();
     return _.sumBy(_.toArray(results), fieldName);
   }
-  sort(fieldName: string, order?: 'ASC' | 'DESC') {
+  /**
+   * Set sorted into realm.objects
+   * 
+   * @param fieldName {string}
+   * @param order {ASC|DESC}
+   * @return {RealmQuery}
+   */
+  public sort(fieldName: string, order?: 'ASC' | 'DESC'): RealmQuery {
     this.sortField = fieldName;
     this.sortReverse = order === 'DESC' ? true : false;
     return this;
   }
-	/**
-	 * Combine to another query
-	 */
-  join(query) {
+  /**
+   * Combine to another query
+   */
+  public join(query) {
     return this.addCriteria(query.toString());
   }
+  /**
+   * Create new query
+   * @param objects {Realm.Collection}
+   */
   static where(objects: Results<any>): RealmQuery {
     return new RealmQuery(objects);
   }
+  /**
+   * Create new query. Alias of where
+   * @param objects {Realm.Collection}
+   */
   static create(objects?: Results<any>): RealmQuery {
     return new RealmQuery(objects);
   }

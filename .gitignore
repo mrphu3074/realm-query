@@ -40,3 +40,4 @@ dist
 realm-object-server
 io.izlab.realmquery*
 realm-object-server
+.DS_Store
