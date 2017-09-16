@@ -3,3 +3,4 @@
 tsconfig.json
 ./realm-object-server
 ./io.izlab.realmquery*
+.DS_Store
