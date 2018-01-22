@@ -2,15 +2,18 @@
 import { Results } from 'realm';
 export declare type ILogicOperator = 'AND' | 'OR';
 export declare type EqualValueType = string | number | boolean | Date;
-export declare type CompareValueType = number | Date;
+export declare type CompareValueType = number | Date
+export declare type CriteriaFunc = { (pladholders: string[]): string };
+export declare type CriteriaHof = { (): string };
 declare class RealmQuery {
     private objects;
-    private criteria;
+    protected criteria: any[];
+    protected values: any[]; // Values to be bound to query. Deferred appending till binding done in toString()
     private inGroup;
     private sortField;
     private sortReverse;
     constructor(objects?: Results<any>);
-    addCriteria(critera: any): RealmQuery;
+    addCriteria(critera: CriteriaFunc, criteriaValues: any[] ): RealmQuery;
     private getFilteredObjects();
     toString(): string;
     /**
