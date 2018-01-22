@@ -28,6 +28,8 @@ class RealmQuery {
   }
 
   addCriteria(criteriaCallback: CriteriaFunc, criteriaValues: any[] = []): RealmQuery {
+    // NOTE: This high order function has the side effect of manipulating the 'values' array.
+    // NOTE: Which is necessary for generating the proper binding palcholders
     let criteria: CriteriaHof = function () {
       const placeholderCallback = function (value) {
           const index = this.values.length;
@@ -59,6 +61,8 @@ class RealmQuery {
     return results;
   }
   public toString(): string {
+    // Values for bindings must be cleared out since we're calling toString again
+    this.values = [];
     let criteriaStr = [];
     let hasNotOperator = false;
     for (let i in this.criteria) {
