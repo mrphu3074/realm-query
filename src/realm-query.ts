@@ -5,7 +5,7 @@ export type ILogicOperator = 'AND' | 'OR';
 export type EqualValueType = string | number | boolean | Date;
 export type CompareValueType = number | Date;
 export type CriteriaFunc = { (placeholders: string[]): string };
-export type CriteriaHof = { (): string };
+export type CriteriaFuncWrapper = { (): string };
 
 class RealmQuery {
   private objects: Results<any>;
@@ -28,9 +28,12 @@ class RealmQuery {
   }
 
   addCriteria(criteriaCallback: CriteriaFunc, criteriaValues: any[] = []): RealmQuery {
-    // NOTE: This high order function has the side effect of manipulating the 'values' array.
-    // NOTE: Which is necessary for generating the proper binding palcholders
-    let criteria: CriteriaHof = function () {
+    // NOTE: This wrapper function has the side effect of manipulating the 'values' array.
+    // NOTE: Which is necessary for generating the proper binding placeholders
+    // NOTE: We don't use arrow function because if the criteria of another RealmQuery is joined
+    // NOTE: we want 'this' instance to be used for the call such that values are pushed on to the correct instance.
+    // NOTE:So in toString() the 'this' instance is passed to .call() invocation
+    let criteria: CriteriaFuncWrapper = function () {
       const placeholderCallback = function (value) {
           const index = this.values.length;
           this.values.push(value);
@@ -67,16 +70,16 @@ class RealmQuery {
     let hasNotOperator = false;
     for (let i in this.criteria) {
       if (!_.isArray(this.criteria[i])) {
-        const hof: CriteriaHof = this.criteria[i];
-        const criteria: string = hof.call(this);
+        const wrapper: CriteriaFuncWrapper = this.criteria[i];
+        const criteria: string = wrapper.call(this);
         if ( criteria !== 'NOT') {
           criteriaStr.push(criteria);
         } else {
           hasNotOperator = true;
         }
       } else {
-        criteriaStr.push('(' + this.criteria[i].map((hof: CriteriaHof) => {
-          const criteria = hof.call(this);
+        criteriaStr.push('(' + this.criteria[i].map((wrapper: CriteriaFuncWrapper) => {
+          const criteria = wrapper.call(this);
           if (criteria === 'NOT') {
             hasNotOperator = true;
           }

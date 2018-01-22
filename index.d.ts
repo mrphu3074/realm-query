@@ -4,7 +4,7 @@ export declare type ILogicOperator = 'AND' | 'OR';
 export declare type EqualValueType = string | number | boolean | Date;
 export declare type CompareValueType = number | Date;
 export declare type CriteriaFunc = { (pladholders: string[]): string };
-export declare type CriteriaHof = { (): string };
+export declare type CriteriaFuncWrapper = { (): string };
 declare class RealmQuery {
     private objects;
     protected criteria: any[];
