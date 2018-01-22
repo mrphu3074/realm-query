@@ -322,6 +322,14 @@ describe('Get objects with RealmQuery', function () {
     expect(JSON.stringify(result)).to.equal(JSON.stringify(expected));
   });
 
+  it('Find all with less than date filter', function () {
+      let query = RealmQuery
+          .where(realm.objects('Person'))
+          .lessThan('createdAt', new Date("2010-01-01 00:00:00"));
+      const results = query.findAll();
+      expect(results.length).to.equal(3);
+  });
+
   it('Count', function () {
     let total = RealmQuery
       .where(realm.objects('Person'))
