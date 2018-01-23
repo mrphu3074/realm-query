@@ -39,7 +39,7 @@ class RealmQuery {
           this.values.push(value);
           return `$${index}`;
       };
-      const placeholders: string[] = criteriaValues.map(placeholderCallback.bind(this));
+      const placeholders: string[] = criteriaValues.map(placeholderCallback.bind(this)) as string[];
       return criteriaCallback(placeholders);
     };
     if (this.inGroup) {
